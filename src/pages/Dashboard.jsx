@@ -1,122 +1,143 @@
 import React from "react";
 import dataMahasiswa from "../data/dataMahasiswa";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, PieChart, Pie } from "recharts";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from "recharts";
 
 const Dashboard = () => {
 
   const totalMahasiswa = dataMahasiswa.length;
-
   const totalNilai = dataMahasiswa.reduce((acc, mhs) => acc + mhs.nilai, 0);
-
   const rataRataNilai = totalNilai / totalMahasiswa;
-
   const nilaiTertinggi = Math.max(...dataMahasiswa.map(mhs => mhs.nilai));
 
   const dataJurusan = [
-    {
-      jurusan: "Informatika",
-      jumlah: dataMahasiswa.filter(mhs => mhs.jurusan === "Informatika").length
-    },
-    {
-      jurusan: "Sistem Informasi",
-      jumlah: dataMahasiswa.filter(mhs => mhs.jurusan === "Sistem Informasi").length
-    }
+    { jurusan: "Informatika", jumlah: dataMahasiswa.filter(m => m.jurusan === "Informatika").length },
+    { jurusan: "Sistem Informasi", jumlah: dataMahasiswa.filter(m => m.jurusan === "Sistem Informasi").length }
   ];
-const dataSemester = [
-  { semester: 1, nilai: dataMahasiswa.filter(m => m.semester === 1).reduce((a, b) => a + b.nilai, 0) / dataMahasiswa.filter(m => m.semester === 1).length || 0 },
-  { semester: 2, nilai: dataMahasiswa.filter(m => m.semester === 2).reduce((a, b) => a + b.nilai, 0) / dataMahasiswa.filter(m => m.semester === 2).length || 0 },
-  { semester: 3, nilai: dataMahasiswa.filter(m => m.semester === 3).reduce((a, b) => a + b.nilai, 0) / dataMahasiswa.filter(m => m.semester === 3).length || 0 },
-  { semester: 4, nilai: dataMahasiswa.filter(m => m.semester === 4).reduce((a, b) => a + b.nilai, 0) / dataMahasiswa.filter(m => m.semester === 4).length || 0 },
-  { semester: 5, nilai: dataMahasiswa.filter(m => m.semester === 5).reduce((a, b) => a + b.nilai, 0) / dataMahasiswa.filter(m => m.semester === 5).length || 0 },
-  { semester: 6, nilai: dataMahasiswa.filter(m => m.semester === 6).reduce((a, b) => a + b.nilai, 0) / dataMahasiswa.filter(m => m.semester === 6).length || 0 },
-  { semester: 7, nilai: dataMahasiswa.filter(m => m.semester === 7).reduce((a, b) => a + b.nilai, 0) / dataMahasiswa.filter(m => m.semester === 7).length || 0 },
-  { semester: 8, nilai: dataMahasiswa.filter(m => m.semester === 8).reduce((a, b) => a + b.nilai, 0) / dataMahasiswa.filter(m => m.semester === 8).length || 0 },
-];
 
-const dataGender = [
-  {
-    name: "Laki-laki",
-    value: dataMahasiswa.filter(m => m.gender === "L").length
-  },
-  {
-    name: "Perempuan",
-    value: dataMahasiswa.filter(m => m.gender === "P").length
-  }
-];
+  const dataSemester = [1,2,3,4,5,6,7,8].map(s => ({
+    semester: s,
+    nilai:
+      dataMahasiswa.filter(m => m.semester === s).reduce((a, b) => a + b.nilai, 0) /
+      (dataMahasiswa.filter(m => m.semester === s).length || 1)
+  }));
+
+  const dataGender = [
+    { name: "Laki-laki", value: dataMahasiswa.filter(m => m.gender === "L").length },
+    { name: "Perempuan", value: dataMahasiswa.filter(m => m.gender === "P").length }
+  ];
+
+  const COLORS = ["#3b82f6", "#60a5fa"];
 
   return (
-    <div>
-      <h1>Dashboard Data Mahasiswa</h1>
-
-      <h3>Total Mahasiswa: {totalMahasiswa}</h3>
-      <h3>Rata-rata Nilai: {rataRataNilai.toFixed(2)}</h3>
-      <h3>Nilai Tertinggi: {nilaiTertinggi}</h3>
-
-      <h2>Jumlah Mahasiswa per Jurusan</h2>
-
-      <BarChart width={400} height={300} data={dataJurusan}>
-        <XAxis dataKey="jurusan" />
-        <YAxis />
-        <Tooltip />
-        <Bar dataKey="jumlah" />
-      </BarChart>
+    <div style={{ padding: "20px", background: "#e6f0ff", minHeight: "100vh", fontFamily: "Arial" }}>
       
-      <h2>Tren Nilai per Semester</h2>
+      <h1 style={{ marginBottom: "20px", color: "#1e3a8a" }}>📊 Dashboard Data Mahasiswa</h1>
 
-<LineChart width={400} height={300} data={dataSemester}>
-  <XAxis dataKey="semester" />
-  <YAxis />
-  <Tooltip />
-  <Line type="monotone" dataKey="nilai" />
-</LineChart>
+      {/* KPI GRID */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginBottom: "20px" }}>
+        
+        <div style={{ background: "#2563eb", color: "white", padding: "20px", borderRadius: "12px" }}>
+          <h4>👨‍🎓 Total Mahasiswa</h4>
+          <h2>{totalMahasiswa}</h2>
+        </div>
 
-<h2>Distribusi Gender</h2>
+        <div style={{ background: "#3b82f6", color: "white", padding: "20px", borderRadius: "12px" }}>
+          <h4>📈 Rata-rata Nilai</h4>
+          <h2>{rataRataNilai.toFixed(2)}</h2>
+        </div>
 
-<PieChart width={400} height={300}>
-  <Pie
-    data={dataGender}
-    dataKey="value"
-    nameKey="name"
-    cx="50%"
-    cy="50%"
-    outerRadius={100}
-    label
-  />
-  <Tooltip />
-</PieChart>
+        <div style={{ background: "#60a5fa", color: "white", padding: "20px", borderRadius: "12px" }}>
+          <h4>🏆 Nilai Tertinggi</h4>
+          <h2>{nilaiTertinggi}</h2>
+        </div>
 
-<h2>Data Mahasiswa</h2>
+      </div>
 
-<table border="1" cellPadding="10">
-  <thead>
-    <tr>
-      <th>Nama</th>
-      <th>Jurusan</th>
-      <th>Semester</th>
-      <th>Nilai</th>
-      <th>Gender</th>
-    </tr>
-  </thead>
-  <tbody>
-    {dataMahasiswa.map((mhs, index) => (
-      <tr key={index}>
-        <td>{mhs.nama}</td>
-        <td>{mhs.jurusan}</td>
-        <td>{mhs.semester}</td>
-        <td>{mhs.nilai}</td>
-        <td>{mhs.gender}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+      {/* GRID CHART */}
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "20px" }}>
+        
+        {/* LEFT */}
+        <div>
 
-      <ul>
-        {dataMahasiswa.map((mhs, index) => (
-          <li key={index}>
-            {mhs.nama} - {mhs.jurusan} - Nilai: {mhs.nilai}
-          </li>
-        ))}
-      </ul>
+          {/* BAR */}
+          <div style={{ background: "white", padding: "20px", borderRadius: "12px", marginBottom: "20px" }}>
+            <h3>📊 Jumlah Mahasiswa per Jurusan</h3>
+            <BarChart width={500} height={300} data={dataJurusan}>
+              <XAxis dataKey="jurusan" />
+              <YAxis />
+              <Tooltip contentStyle={{ borderRadius: "10px" }} />
+              <Bar dataKey="jumlah" fill="#3b82f6" />
+            </BarChart>
+          </div>
+
+          {/* LINE */}
+          <div style={{ background: "white", padding: "20px", borderRadius: "12px" }}>
+            <h3>📈 Tren Nilai per Semester</h3>
+            <LineChart width={500} height={300} data={dataSemester}>
+              <XAxis dataKey="semester" />
+              <YAxis />
+              <Tooltip contentStyle={{ borderRadius: "10px" }} />
+              <Line type="monotone" dataKey="nilai" stroke="#2563eb" strokeWidth={3} />
+            </LineChart>
+          </div>
+
+        </div>
+
+        {/* RIGHT */}
+        <div>
+
+          {/* PIE */}
+          <div style={{ background: "white", padding: "20px", borderRadius: "12px" }}>
+            <h3>🥧 Distribusi Gender</h3>
+            <PieChart width={300} height={300}>
+              <Pie
+                data={dataGender}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label
+              >
+                {dataGender.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip contentStyle={{ borderRadius: "10px" }} />
+            </PieChart>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* TABLE */}
+      <div style={{ background: "white", padding: "20px", borderRadius: "12px", marginTop: "20px" }}>
+        <h3>📋 Data Mahasiswa</h3>
+        <table style={{ borderCollapse: "collapse", width: "100%" }}>
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Jurusan</th>
+              <th>Semester</th>
+              <th>Nilai</th>
+              <th>Gender</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dataMahasiswa.map((mhs, index) => (
+              <tr key={index}>
+                <td>{mhs.nama}</td>
+                <td>{mhs.jurusan}</td>
+                <td>{mhs.semester}</td>
+                <td>{mhs.nilai}</td>
+                <td>{mhs.gender}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
     </div>
   );
 };
